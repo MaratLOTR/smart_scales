@@ -1,5 +1,6 @@
 import uvicorn
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
 from web.containers.Container import UserControllerContainer
 from web.views import routers
@@ -10,6 +11,13 @@ def create_app() -> FastAPI:
     container = UserControllerContainer()
     db = container.database()
     app = FastAPI()
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     app.container = container
     for router in routers:
@@ -17,6 +25,3 @@ def create_app() -> FastAPI:
     return app
 
 app = create_app()
-
-if __name__ == '__main__':
-    uvicorn.run("create_app:app", host="127.0.0.1", port=8000)
